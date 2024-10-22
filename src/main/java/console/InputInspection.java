@@ -22,15 +22,15 @@ public class InputInspection {
 
     //commandTable
     static String[] classificationList = {"accounts","boards","posts","help"};
-    static String[] boardCommandList = {"edit","remove","add","view"};
-    static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove"};
-    static String[] commandList = {"add","edit","remove","get","exit","board","list","help"}; //view는 List와 역할이 같고 파라미터로 구분.
+    static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help"};
+    static String[] boardCommandList = {"edit","remove","add","view","help"};
+    static String[] commandList = {"add","edit","remove","get","board","help"}; //view는 List와 역할이 같고 파라미터로 구분.
 
     //ParamsTable 3개의 자식노드를 갖는다.
     static String[] boardsTree =
             {"boards","boardId","boardName",null,"edit","remove",null,"view",null,null,null,null,null};
     static String[] postsTree =
-            {"posts","boardId","postId",null,"add",null,null,"remove","edit","view",null,null,null};
+            {"posts","boardId","postId",null,"add",null,null,"remove","edit","get",null,null,null};
     static String[] accountsTree =
             {"accounts","accountId",null,null,"detail","edit","remove",null,null,null,null,null,null};
 
@@ -43,20 +43,27 @@ public class InputInspection {
     private InputInspection() {
     }
 
-    static String inputInspection() {
-        Scanner sc = new Scanner(System.in);
-        String urlcommand = sc.nextLine();
-        urlcommand = urlcommand.trim(); // 앞뒤 공백 제거.
+
+    //URL 스플리터를 통과해서 나눠진 값들이 각 검사기를 통과하면 클래스 채로 반환.
+    static URLSplitDone inputInspection(String urlcommand) {
+
 
         //간단한 URL의 형식이 맞는지 검사. 애초에 맞지 않는데 쪼개기 하면 에러남.
         if(!urlcommand.contains("/")){
             System.out.println("올바르지 않은 URL 입니다.");
-            return "";
+            return null;
+        }else{
+            urlcommand = urlcommand.substring(1);
         }
 
 
         //URL 쪼개기(분류,명령, 파라메터의 값이 Hash로 들어있음.
+
         URLSplitDone splitDone = urlSpliter(urlcommand);
+
+        if (splitDone == null) {
+            return null;
+        }
 
         String classification = splitDone.classification;
         String command = splitDone.command;
@@ -65,11 +72,14 @@ public class InputInspection {
 
         //분류 검사,커맨드 검사,파라미터 검사.
         if (!checkClassification(classification)) {//분류가 올바르지 않을시.
-            return "분류 에러";
+            System.out.println("분류 에러");
+            return null;
         }else if(!checkCommand(classification, command)) { //커맨드가 올바르지 않을 시,
-            return "분류에 해당하지 않는 명령어";
-        }else if(checkParams(classification, command, paramsHash)) {
-            return "파라미터 오류입니다.";
+            System.out.println("분류에 해당하지 않는 명령어");
+            return null;
+        }else if(!checkParams(classification, command, paramsHash)) {
+            System.out.println("파라미터 오류입니다.");
+            return null;
         }
 
 
@@ -83,23 +93,9 @@ public class InputInspection {
         exit : 콘솔종료 \n
          */
 
-
-        if(urlcommand.equals("help")){
-            System.out.print(
-                    "add : 게시물을 생성합니다. \n" +
-                            "edit : 해당 번호의 게시물을 수정합니다. 수정한 시간이 찍힙니다. \n" +
-                            "remove : 해당 번호의 게시물을 삭제합니다. \n" +
-                            "lookPost : 해당 번호의 게시물을 조회합니다.  \n" +
-                            "board : board 진입 - 미구현\n" +
-                            "exit : 콘솔을 종료합니다. \n");
-        }
-
-        return "예기치 못한 에러";
+        return splitDone;
 
     }
-
-
-
 
     //분류 검사기.
     static boolean checkClassification(String urlSplit){
@@ -166,7 +162,7 @@ public class InputInspection {
 
         //명령어가 파라미터를 안가지고 있어도 되는 경우, commandIndex 가 -1인 경우.(명령어검사가 끝나면 이쪽으로 오기에)
         if(commandIndex == -1){
-            params.clear(); // 파라미터 해시테이블을 삭제해버림.
+            params.clear(); // 파라미터 해시테이블을 삭제해버림. 해시테이블이 NPE말고 다른 일도 벌이면 곤란하니까.
             return true; // 보내줘야함 파라미터를 볼 필요가 없다.
         }
 
@@ -176,7 +172,7 @@ public class InputInspection {
             return false;
         }
 
-        return false;
+        return true;
     }
 
 
@@ -193,10 +189,21 @@ public class InputInspection {
         커맨드와 파라미터는, 커맨드가 수행될 때 파라미터 검사를 할 것, HashMap에 저장하기. 나중에 메소드 단에서 Try-catch로 해결해볼것
         URL 앞단을 "/"단위로 쪼갠다.
          */
-        String[] urlSplit = urlcommand.split("/",2);//urlSplit에 나눠담는다.
-        String classification = urlSplit[0]; //분류 빼기
-        String command = urlSplit[1].split("\\?",2)[0]; //명령어(command) 빼기
-        String params = urlSplit[1].split("\\?",2)[1]; //파라미터 부분이 담긴다.
+
+
+            String[] urlSplit = urlcommand.split("/",2);//urlSplit에 나눠담는다.
+            String classification = urlSplit[0]; //분류 빼기
+            String command; //명령어(command) 빼기
+            String params; //파라미터 부분이 담긴다.
+
+        try{
+            command = urlSplit[1].split("\\?",2)[0];
+            params = urlSplit[1].split("\\?",2)[1];
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("구분자 오류입니다. 파라미터가 없을 수도 있습니다.");
+            return null;
+        }
+
 
         //파라미터가 hashMap으로 파싱.
         HashMap<String, String> paramsHash = new HashMap<>();
@@ -220,15 +227,20 @@ public class InputInspection {
         return SplitDone;
     }
 
-    //URL 스플리터를 반환하기 위한 포장지
+    //URL 스플리터를 반환하기위한 에러 메세지
     static class URLSplitDone {
         String classification;
         String command;
         HashMap<String, String> paramsHash;
+        String errorMessage;
         public URLSplitDone(String classification, String command, HashMap<String, String> paramsHash) {
             this.classification = classification;
             this.command = command;
             this.paramsHash = paramsHash;
+        }
+
+        public void setErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
         }
     }
 }
