@@ -38,7 +38,7 @@ public class Console {
 
             //입력
             try {
-                switch (inputInspection()) {
+                switch (inputInspection()) { //inputInspection은 명령을 입력받고, 유효한 명령어를 뱉는다.
                     case "add":
                         lastpost = testuser.addPost(); // 마지막으로 건든파일
                         postBoard.put(Integer.valueOf(lastpost[0]), lastpost);
@@ -150,8 +150,6 @@ public class Console {
         Date now = new Date();
         SimpleDateFormat timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         post[4]=timeStamp.format(now);
-
-
 
         //수정일 수정할 때 값이 채워지므로.
         post[5] = "수정되지 않음";
@@ -276,3 +274,5 @@ public class Console {
         }
     }
 }
+
+//
