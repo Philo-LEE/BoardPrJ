@@ -22,7 +22,7 @@ public class InputInspection {
 
     //commandTable
     static String[] classificationList = {"accounts","boards","posts","help"};
-    static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help"};
+    static String[] accountsCommandList = {"login","signup","signin","signout","detail","edit","remove","help"};
     static String[] boardCommandList = {"edit","remove","add","view","set","list","help"};
     static String[] commandList = {"add","edit","remove","get","board","help"}; //view는 List와 역할이 같고 파라미터로 구분.
 
@@ -78,7 +78,6 @@ public class InputInspection {
 
         if(!checkCommand(classification, command)) { //커맨드가 올바르지 않을 시,
             System.out.println("분류에 해당하지 않는 명령어");
-
             return null;
         }
 

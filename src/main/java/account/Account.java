@@ -19,7 +19,7 @@ public abstract class Account {
         //만든 시간 삽입
         Date now = new Date();
         SimpleDateFormat timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        createDate = timeStamp.format(now);
+        this.createDate = timeStamp.format(now);
 
 
         this.email = email;
@@ -30,10 +30,29 @@ public abstract class Account {
     }
 
     //회원등급 반환하기.
-    public abstract int CheckMyAccountLevel();
+    public abstract int checkMyAccountLevel();
+
+    //비밀번호 확인하기
+    public boolean checkPw(String accountPW){
+        return this.accountPW.equals(accountPW);
+    }
+
+    //
 
 
+    public String getAccountID() {
+        return accountID;
+    }
 
+    public String getAccountPW() {
+        return accountPW;
+    }
 
+    public String getEmail() {
+        return email;
+    }
 
+    public String getCreateDate() {
+        return createDate;
+    }
 }

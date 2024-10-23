@@ -10,7 +10,7 @@ public class DefaultAccount extends Account {
     }
 
 
-    public int CheckMyAccountLevel() {
+    public int checkMyAccountLevel() {
         return this.AccountLevel;
     }
 

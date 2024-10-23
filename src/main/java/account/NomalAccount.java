@@ -8,7 +8,7 @@ public class NomalAccount extends Account {
     }
 
     @Override
-    public int CheckMyAccountLevel() {
+    public int checkMyAccountLevel() {
         return this.AccountLevel;
     }
 }

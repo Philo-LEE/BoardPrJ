@@ -2,7 +2,11 @@ package console;
 
 
 import account.Account;
+import account.AccountsBox;
 import account.DefaultAccount;
+import account.NomalAccount;
+import account.Session.Session;
+import command.AccountCommand;
 import command.BoardCommand;
 import command.PostsCommand;
 import contents.Board;
@@ -15,19 +19,19 @@ import java.util.Scanner;
 public class NewConsole {
 
     public static void main(String[] args) {
-        //-> 명령어(각 사용자들마다 사용할 수 있는 명령어가 다름.)
-        //status 레벨(0 : admin, 1 : User, 2 :anonymous)
-        Account user = new DefaultAccount("","","");
-        int userLevel =  user.CheckMyAccountLevel();
-        String userstatus = (userLevel==0) ? "admin" : (userLevel==1) ? "user" : "anonymous";
-
-
-
         //초기화
         BoardBox boardBox = new BoardBox(); // 보드박스 만들기
         Board DefaultBoard = new Board("DefaultBoard"); //디폴트 보드임.
+        Session nowsession = new Session(); // 이 콘솔에 로그인한 계정의 정보를 담을 세션 생성.
+        nowsession.defaultsessionSet();//세션 초기화
 
+        AccountsBox accountsBox = new AccountsBox();
 
+        //레벨(0 : admin, 1 : User, 2 :anonymous)
+        //NomalAccount account = new NomalAccount("tlgus7777","","tlgus7777@naver.com");
+        //accountsBox.setAccount(account);
+
+        int userLevel =  nowsession.getUserLevel();
 
         // 설정한 보드의 실제 상태가 여기에 캐스팅됨. 초기값은 defaultboard가 담김
         // posts 명령어에서 boardId를 받지 않고 postId만 받기 때문에 항상 콘솔에서 board가 있어야한다.
@@ -49,7 +53,8 @@ public class NewConsole {
 
         Scanner sc = new Scanner(System.in); //스캐너헤헤 ㅋㅋ
         while(true){
-            System.out.print(userstatus + ">");
+
+            System.out.print(nowsession.getLoginId()+ ">");
 
             //입력받기
             String urlcommand = sc.nextLine();
@@ -61,8 +66,6 @@ public class NewConsole {
             //작성중
             //스플릿 명령을 받을 클래스 생성
             InputInspection.URLSplitDone splitDone;
-
-
 
             splitDone = InputInspection.inputInspection(urlcommand);
 
@@ -81,6 +84,9 @@ public class NewConsole {
                 switch (classification) {
                     case "accounts":
                         switch (command) {
+                            case "login":
+                                if(AccountCommand.Login(nowsession)){break;}
+                                break;
                             case "signup":
                                 break;
                             case "signin":
