@@ -1,46 +1,55 @@
 package console;
 
 
+import account.Account;
 import account.DefaultAccount;
+import command.BoardCommand;
 import command.PostsCommand;
+import contents.Board;
+import contents.BoardBox;
+
 import java.util.HashMap;
 import java.util.Scanner;
 
 
 public class NewConsole {
 
-    static int index =1;
-
-
     public static void main(String[] args) {
         //-> 명령어(각 사용자들마다 사용할 수 있는 명령어가 다름.)
         //status 레벨(0 : admin, 1 : User, 2 :anonymous)
-        DefaultAccount user = new DefaultAccount("","");
-        int userLevel = user.CheckMyAccountLevel();
+        Account user = new DefaultAccount("","","");
+        int userLevel =  user.CheckMyAccountLevel();
         String userstatus = (userLevel==0) ? "admin" : (userLevel==1) ? "user" : "anonymous";
 
 
 
-        //구현부
-        // 출력될 post가 잠시 머무를 곳.
-//        ArrayList<String> lastpost = new ArrayList<>(); 이제 안쓸듯
+        //초기화
+        BoardBox boardBox = new BoardBox(); // 보드박스 만들기
+        Board DefaultBoard = new Board("DefaultBoard"); //디폴트 보드임.
 
 
 
-        //post가 저장될 게시글 목록
-        HashMap<Integer, String[]> postBoard = new HashMap<>(); // post가 저장될 곳 보드 개념.
-        HashMap<Integer, HashMap<Integer, String[]>> boardList = new HashMap<>(); //보드들이 있는 게시판
+        // 설정한 보드의 실제 상태가 여기에 캐스팅됨. 초기값은 defaultboard가 담김
+        // posts 명령어에서 boardId를 받지 않고 postId만 받기 때문에 항상 콘솔에서 board가 있어야한다.
+        HashMap<Integer, String[]> nowBoardList = DefaultBoard.getContents();
+        boardBox.putboardList(DefaultBoard.getBoardIndex(),DefaultBoard); // 디폴트 보드를 보드박스안에 넣기.
 
-        boardList.put(1,postBoard); //디폴트 게시판 생성.
 
-
-        HashMap<Integer, String[]> nowBoard = postBoard; //현재 설정된 게시판
-        String[] nowpost; //가독성을 위해 반환된 post가 돌아올 공간.
+        //현재 설정된 게시판
+        String[] nowpost; //가독성을 위해 만들어진 post가 돌아올 공간.
         String paramsValue; //ParamsValue가 전달됨.
+
+
+//        HashMap<Integer, String[]> postBoard = boardBox.getBoardList()// post가 저장될 곳 보드 개념.
+
+        //HashMap<Integer, HashMap<Integer, String[]>> boardList = new HashMap<>(); //보드들이 있는 게시판
+
+
+
+
         Scanner sc = new Scanner(System.in); //스캐너헤헤 ㅋㅋ
         while(true){
             System.out.print(userstatus + ">");
-            NewConsole testuser = new NewConsole(); //콘솔핸들러 생성. 콘솔 주체 / user.// Develop 한다면 여기 testuser에 Login 기능 만들어야할듯.
 
             //입력받기
             String urlcommand = sc.nextLine();
@@ -67,122 +76,114 @@ public class NewConsole {
             HashMap<String, String> paramsHash = splitDone.paramsHash;
 
             //받아온 명령들을 실제 메소드와 매핑시킨다.
-            switch (classification) {
-                case "accounts":
-                    switch (command) {
-                        case "signup":
-                            break;
-                        case "signin":
-                            break;
-                        case "signout":
-                            break;
-                        case "detail":
-                            break;
-                        case "edit":
-                            break;
-                        case "remove":
-                            break;
-                        case "help":
-                            break;
-                    }
-                    break;
-                case "boards":
-                    switch (command) {
-                        case "edit":
-                            break;
-                        case "remove":
-                            break;
-                        case "add":
-                            break;
-                        case "view":
-                            break;
-                        case "help":
-                            break;
-                    }
-                    break;
-                case "posts":
-                    switch (command) {
-                        case "add":
-                            nowpost = PostsCommand.addPost(String.valueOf(1)); //1은 보드번호
-                            nowBoard.put(nowpost[0], nowpost);
-                            break;
-                        case "edit":
-                            paramsValue = paramsHash.get("postId");
-                            nowpost = PostsCommand.editPost(nowBoard, paramsValue);
-                            nowBoard.put(nowpost[0], nowpost);
-                            break;
-                        case "remove":
-                            paramsValue = paramsHash.get("postId");
-                            PostsCommand.remove(nowBoard, paramsValue);
-                            break;
-                        case "get":
-                            paramsValue = paramsHash.get("postId");
-                            PostsCommand.lookPost(nowBoard, paramsValue);
-                            break;
-                        case "help":
-                            System.out.print(
-                                    "/posts/add : 게시물을 생성합니다. \n" +
-                                    "/posts/edit?PostID=『번호』 : 게시물을 수정합니다. 수정한 시간이 찍힙니다. \n" +
-                                    "/posts/remove?PostID=『번호』 : 해당 번호의 게시물을 삭제합니다. \n" +
-                                    "/posts/get?PostID=『번호』 : 해당 번호의 게시물을 조회합니다.  \n");
-                            break;
-                    }
-                    break;
-
-                case "help":
-                    System.out.print(
-                        "/accounts/help : 계정관련한 명령어를 봅니다. \n" +
-                        "/board/help : 게시물을 수정합니다. 수정한 시간이 찍힙니다. \n" +
-                        "/posts/help : 해당 번호의 게시물을 삭제합니다. \n"+
-                        "exit : 콘솔을 종료합니다.");
-                break;
-            }
-
-
-
-
-            //작성중
-            //입력
-
-            /*
-
 
             try {
-                switch (InputInspection.inputInspection(urlcommand)) { //inputInspection은 명령을 입력받고, 유효한 명령어를 뱉는다.
-                    case "add":
-                        lastpost = testuser.addPost(); // 마지막으로 건든파일
-                        postBoard.put(Integer.valueOf(lastpost[0]), lastpost);// 받아온
+                switch (classification) {
+                    case "accounts":
+                        switch (command) {
+                            case "signup":
+                                break;
+                            case "signin":
+                                break;
+                            case "signout":
+                                break;
+                            case "detail":
+                                break;
+                            case "edit":
+                                break;
+                            case "remove":
+                                break;
+                            case "help":
+                                break;
+                        }
                         break;
-                    case "exit":
-                        consoleExit();
+                    case "boards":
+                        switch (command) {
+                            case "edit":
+                                paramsValue = paramsHash.get("boardId");
+                                BoardCommand.editBoard(boardBox,Integer.valueOf(paramsValue));
+                                break;
+                            case "remove":
+                                paramsValue = paramsHash.get("boardId");
+                                BoardCommand.removeBoard(boardBox, Integer.valueOf(paramsValue));
+                                break;
+                            case "add":
+                                paramsValue = paramsHash.get("boardName");
+                                if (Board.getNameToIndex().containsKey(paramsValue)) {
+                                    System.out.println("에러! 이름이 중복됩니다.");
+                                    break;
+                                }
+                                Board tempBoard = BoardCommand.newBoard(paramsValue);
+                                boardBox.putboardList(tempBoard.getBoardIndex(), tempBoard);
+                                break;
+                            case "view":
+                                paramsValue = paramsHash.get("boardName");
+                                Integer boardIndex = Board.getNameToIndex().get(paramsValue);
+                                BoardCommand.postList(boardBox.getBoard(boardIndex).getContents());
+                                break;
+                            case "set":
+                                paramsValue = paramsHash.get("boardId");
+                                nowBoardList = boardBox.getBoard(Integer.valueOf(paramsValue)).getContents();
+                                break;
+                            case "list":
+                                BoardCommand.boardList(boardBox);
+                                break;
+                            case "help":
+
+                                break;
+                        }
                         break;
-                    case "get":
-                        lookPost(postBoard);
+                    case "posts":
+                        switch (command) {
+                            case "add":
+                                paramsValue = paramsHash.get("boardId");
+                                if(!(boardBox.getBoardList().containsKey(Integer.valueOf(paramsValue)))){
+                                    System.out.println("해당 보드는 만들어지지 않았습니다. /boards/list를 통해 보드를 확인하세요.");
+                                    break;
+                                }
+                                nowpost = PostsCommand.addPost(paramsValue); //1은 보드번호
+//                                nowBoardList.put(Integer.valueOf(nowpost[0]), nowpost);
+                                boardBox.getBoard(Integer.valueOf(paramsValue)).put(nowpost);
+                                break;
+                            case "edit":
+                                paramsValue = paramsHash.get("postId");
+                                nowpost = PostsCommand.editPost(nowBoardList, paramsValue);
+                                if (nowpost == null) {
+                                    System.out.println("수정할 게시물이 없습니다.");
+                                    break;}
+                                //해당 postId가 있던 게시판으로 할당되어야 하므로.
+                                boardBox.getBoard(Integer.valueOf(paramsValue)).put(nowpost);
+                                break;
+                            case "remove":
+                                paramsValue = paramsHash.get("postId");
+                                PostsCommand.remove(nowBoardList, paramsValue);
+                                break;
+                            case "get":
+                                paramsValue = paramsHash.get("postId");
+                                PostsCommand.lookPost(nowBoardList, paramsValue);
+                                break;
+                            case "help":
+                                System.out.print(
+                                        "/posts/add : 현재 게시판에 게시물을 생성합니다.  \n" +
+                                                "/posts/edit?PostID=『번호』 : 게시글을 수정합니다. 수정한 시간이 추가됩니다. 번호는 현재 설정되어있는 게시판의 게시글 번호입니다. \n" +
+                                                "/posts/remove?PostID=『번호』 : 해당 번호의 게시판의 게시물을 삭제합니다. \n" +
+                                                "/posts/get?PostID=『번호』 : 해당 번호의 게시판의 게시물을 조회합니다.  \n");
+                                break;
+                        }
                         break;
-                    case "remove"://
-                        remove(postBoard);
-                        break;
-                    case "edit":
-                        lastpost = editPost(postBoard);
-                        postBoard.put(Integer.valueOf(lastpost[0]), lastpost); //마지막
-                        break;
-                    case "list" :
-                        postList(postBoard);
-                        break;
-                    case "":
-                        System.out.println("유효하지 않은 명령어");
+
                     case "help":
+                        System.out.print(
+                                "/accounts/help : 계정관련한 명령어를 봅니다. \n" +
+                                        "/boards/help : 게시물을 수정합니다. 수정한 시간이 찍힙니다. \n" +
+                                        "/posts/help : 해당 번호의 게시물을 삭제합니다. \n" +
+                                        "exit : 콘솔을 종료합니다.");
                         break;
                 }
             }catch (NullPointerException e){
-//                System.out.println("범위를 벗어났습니다.");
-                System.out.println("NPE 발생함" + e.getMessage());
-            }catch (IndexOutOfBoundsException e){
-                System.out.println("유효하지 않은 접근");
+                System.out.println("존재하지 않는 파라미터 값을 입력했습니다.");
             }
-            */
         }
-
     }
 
     //exit 구현

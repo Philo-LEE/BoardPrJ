@@ -3,12 +3,12 @@ package account;
 public class AdminAccount extends Account {
     final int AccountLevel = 0;
 
-    public AdminAccount(String accountID, String accountPW) {
-        super(accountID, accountPW);
+    public AdminAccount(String accountID, String accountPW,String email) {
+        super(accountID, accountPW, email);
     }
 
     @Override
-    int CheckMyAccountLevel() {
+    public int CheckMyAccountLevel() {
         return this.AccountLevel;
     }
 }

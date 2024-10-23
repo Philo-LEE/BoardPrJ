@@ -1,5 +1,7 @@
 package command;
 
+import contents.Board;
+
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,12 +14,11 @@ public class PostsCommand {
     static int index = 1; //게시글이 생성될 때 마다 1 더해짐.
 
     //게시글 add 구현
-    static public String[] addPost(String BoardId){
+    static public String[] addPost (String boardNum){
 
         //게시물 인덱스
         String[] post = new String[6];
-        post[0] = String.valueOf(index);
-        index++;
+        post[0] = String.valueOf(index++);
         Scanner sc = new Scanner(System.in);
 
         //title
@@ -31,7 +32,7 @@ public class PostsCommand {
         post[2] = text;
 
         //게시판 Num : 미구현
-        post[3] = BoardId;
+        post[3] = boardNum;
 
         //작성일
         Date now = new Date();
@@ -46,16 +47,16 @@ public class PostsCommand {
     //게시글 get 구현
     static public void lookPost(HashMap<Integer, String[]> postBoard,String boardId){
 
-        String num = boardId;
+        Integer num = Integer.valueOf(boardId);
 
 
         //게시글 넘버 쳌
-        if(!postBoard.containsKey(Integer.valueOf(num))){
+        if(!postBoard.containsKey(num)){
             System.out.println(num + "번 게시글은 존재하지 않습니다.");
             return;
         }
 
-        String[] tempPost = postBoard.get(Integer.valueOf(num));
+        String[] tempPost = postBoard.get(num);
         System.out.print("게시물 번호 : " + tempPost[0] +"\n작성일 : " + tempPost[4] + "\n수정일 : " + tempPost[5] + "\n제목 : " + tempPost[1] + "\n내용 : " + tempPost[2] + "\n");
 
     }
@@ -71,23 +72,28 @@ public class PostsCommand {
             return;
         }
 
+
+
         //해당보드의 해당 인덱스 삭제.
         postBoard.remove(Integer.valueOf(num));
+
+        //삭제할 때 삭제할 넘버 표시하기
+        System.out.println(num+"번 게시물 삭제완료.");
     }
 
     //게시글 edit 구현
     static public String[] editPost(HashMap<Integer, String[]> postBoard,String PostId){
         Scanner sc = new Scanner(System.in);
-        String num = PostId;
+        Integer num = Integer.valueOf(PostId);
 
         //게시글 넘버 쳌
-        if(!postBoard.containsKey(Integer.valueOf(num))){
+        if(!postBoard.containsKey(num)){
             System.out.println(num + "번 게시글은 존재하지 않습니다.");
             return null;
         }
 
         //뽑은 포스트 담길 곳 tempPost
-        String[] tempPost = postBoard.get(Integer.valueOf(num));
+        String[] tempPost = postBoard.get(num);
 
         System.out.print("게시물 번호 : " + tempPost[0] +"\n작성일 : " + tempPost[4] + "\n수정일 : " + tempPost[5] + "\n제목 : " + tempPost[1] + "\n내용 : " + tempPost[2] + "\n");
 

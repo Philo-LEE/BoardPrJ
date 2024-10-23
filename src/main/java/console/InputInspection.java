@@ -23,12 +23,12 @@ public class InputInspection {
     //commandTable
     static String[] classificationList = {"accounts","boards","posts","help"};
     static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help"};
-    static String[] boardCommandList = {"edit","remove","add","view","help"};
+    static String[] boardCommandList = {"edit","remove","add","view","set","list","help"};
     static String[] commandList = {"add","edit","remove","get","board","help"}; //view는 List와 역할이 같고 파라미터로 구분.
 
     //ParamsTable 3개의 자식노드를 갖는다.
     static String[] boardsTree =
-            {"boards","boardId","boardName",null,"edit","remove",null,"view",null,null,null,null,null};
+            {"boards","boardId","boardName",null,"edit","remove","set","view","add",null,null,null,null};
     static String[] postsTree =
             {"posts","boardId","postId",null,"add",null,null,"remove","edit","get",null,null,null};
     static String[] accountsTree =
@@ -50,10 +50,10 @@ public class InputInspection {
 
         //간단한 URL의 형식이 맞는지 검사. 애초에 맞지 않는데 쪼개기 하면 에러남.
         if(!urlcommand.contains("/")){
-            System.out.println("올바르지 않은 URL 입니다.");
+            System.out.println("URL 형식이 아닙니다.");
             return null;
         }else{
-            urlcommand = urlcommand.substring(1);
+            urlcommand = urlcommand.substring(1);//앞의 /는 제거
         }
 
 
@@ -74,10 +74,19 @@ public class InputInspection {
         if (!checkClassification(classification)) {//분류가 올바르지 않을시.
             System.out.println("분류 에러");
             return null;
-        }else if(!checkCommand(classification, command)) { //커맨드가 올바르지 않을 시,
+        }
+
+        if(!checkCommand(classification, command)) { //커맨드가 올바르지 않을 시,
             System.out.println("분류에 해당하지 않는 명령어");
+
             return null;
-        }else if(!checkParams(classification, command, paramsHash)) {
+        }
+
+        if (paramsHash == null) {
+            return splitDone;
+        }
+
+        if(!checkParams(classification, command, paramsHash)) {
             System.out.println("파라미터 오류입니다.");
             return null;
         }
@@ -191,13 +200,28 @@ public class InputInspection {
          */
 
 
-            String[] urlSplit = urlcommand.split("/",2);//urlSplit에 나눠담는다.
-            String classification = urlSplit[0]; //분류 빼기
-            String command; //명령어(command) 빼기
-            String params; //파라미터 부분이 담긴다.
+        String[] urlSplit = urlcommand.split("/",2);//urlSplit에 나눠담는다.
+        String classification = urlSplit[0]; //분류 빼기
+        String command; //명령어(command) 빼기
+        String params; //파라미터 부분이 담긴다.
+        String[] tempTable = new String[13];
+
+        for (int i = 0; i < 3; i++) {
+            if (classificationArray.get(i)[0].equals(classification)) {
+                tempTable = classificationArray.get(i);
+            }
+        }
+
+        try{command = urlSplit[1].split("\\?",2)[0];
+        }catch(ArrayIndexOutOfBoundsException e){
+            return new URLSplitDone(classification,null,null);}
+
+                //만약에 command가 파라미터를 필요로하지않는 명령어라면 params비우고 반환
+                if(!(Arrays.asList(tempTable).contains(command))){
+                    return new URLSplitDone(classification,command,null);
+                };
 
         try{
-            command = urlSplit[1].split("\\?",2)[0];
             params = urlSplit[1].split("\\?",2)[1];
         }catch (ArrayIndexOutOfBoundsException e){
             System.out.println("구분자 오류입니다. 파라미터가 없을 수도 있습니다.");
@@ -212,8 +236,12 @@ public class InputInspection {
         String[] paramsarray = params.split("&");
 
         //파라미터 = 기호로 나누기[파라미터 : 값]으로 파싱된다. 중복되는 파라미터는 마지막에 선언된 값으로 덮어쓰여짐
+        try{
         for(int i = 0;i<paramsarray.length;i++){
             paramsHash.put(paramsarray[i].split("=")[0],paramsarray[i].split("=")[1]);
+        }}catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("파라미터가 올바르지 않습니다.");
+            return null;
         }
 
 
@@ -238,6 +266,10 @@ public class InputInspection {
             this.command = command;
             this.paramsHash = paramsHash;
         }
+
+
+
+
 
         public void setErrorMessage(String errorMessage) {
             this.errorMessage = errorMessage;
