@@ -1,4 +1,4 @@
-package account.Session;
+package console.Session;
 
 import account.Account;
 
@@ -17,6 +17,7 @@ public class Session {
         this.loginId = account.getAccountID();
         this.password = account.getAccountPW();
         this.userLevel = account.checkMyAccountLevel();
+        this.email = account.getEmail();
     }
 
     public int getUserLevel() {
@@ -34,4 +35,11 @@ public class Session {
     public String getLoginId() {
         return loginId;
     }
+
+    public boolean getisLogIn() {
+        return isLogIn;
+    }
+
+
+
 }

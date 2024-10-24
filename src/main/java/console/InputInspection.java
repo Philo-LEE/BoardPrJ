@@ -22,7 +22,7 @@ public class InputInspection {
 
     //commandTable
     static String[] classificationList = {"accounts","boards","posts","help"};
-    static String[] accountsCommandList = {"login","signup","signin","signout","detail","edit","remove","help"};
+    static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help"};
     static String[] boardCommandList = {"edit","remove","add","view","set","list","help"};
     static String[] commandList = {"add","edit","remove","get","board","help"}; //view는 List와 역할이 같고 파라미터로 구분.
 
@@ -40,7 +40,7 @@ public class InputInspection {
 
 
     //해당 클래스는 스태틱 메소드만 존재함.
-    private InputInspection() {
+    public InputInspection() {
     }
 
 
@@ -248,18 +248,17 @@ public class InputInspection {
 
 
         //내부 클래스에 값 탑재시키기
-        URLSplitDone SplitDone = new URLSplitDone(classification, command, paramsHash);
 
 
-        return SplitDone;
+        return new URLSplitDone(classification, command, paramsHash);
     }
 
     //URL 스플리터를 반환하기위한 에러 메세지
-    static class URLSplitDone {
+    public static class URLSplitDone {
         String classification;
         String command;
         HashMap<String, String> paramsHash;
-        String errorMessage;
+
         public URLSplitDone(String classification, String command, HashMap<String, String> paramsHash) {
             this.classification = classification;
             this.command = command;
@@ -267,11 +266,18 @@ public class InputInspection {
         }
 
 
-
-
-
-        public void setErrorMessage(String errorMessage) {
-            this.errorMessage = errorMessage;
+        public String getClassification() {
+            return classification;
         }
+
+        public String getCommand() {
+            return command;
+        }
+
+        public HashMap<String, String> getParamsHash() {
+            return paramsHash;
+        }
+
+
     }
 }

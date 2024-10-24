@@ -8,6 +8,7 @@ public abstract class Account {
     final int AccountLevel = 2;
 
     static int accountIndex;
+    private int index;
     private String accountID;
     private String accountPW;
     private String email;
@@ -25,8 +26,7 @@ public abstract class Account {
         this.email = email;
         this.accountID = accountID;
         this.accountPW = accountPW;
-        accountIndex++;
-
+        this.index = accountIndex++;
     }
 
     //회원등급 반환하기.
@@ -52,7 +52,20 @@ public abstract class Account {
         return email;
     }
 
-    public String getCreateDate() {
-        return createDate;
+    public void setAccountPW(String accountPW) {
+        this.accountPW = accountPW;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String[] letMeIntroduce(){
+        String[] temp = new String[4];
+        temp[0] = String.valueOf(index);
+        temp[1] = accountID;
+        temp[2] = email;
+        temp[3] = createDate;
+        return temp;
     }
 }

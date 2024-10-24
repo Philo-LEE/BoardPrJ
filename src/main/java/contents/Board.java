@@ -12,13 +12,20 @@ public class Board {
     private Integer index = 0;
     private HashMap<Integer, String[]> contents = new HashMap<>();
     private static HashMap<String,Integer> nameToIndex = new HashMap<>();
+    private String createdBy;
+
+
 
     //생성자
     public Board(String boardName) {
         this.boardName = boardName;
         this.index = boardIndex++;
-        this.nameToIndex.put(boardName,this.index);
+
         //이름과 보드넘버를 매칭하는 해시테이블에 값 추가.
+        this.nameToIndex.put(boardName,this.index);
+
+
+
     }
 
 
@@ -42,16 +49,30 @@ public class Board {
         this.contents.put(postIndex++, content);
     }
 
+    //보드이름 정하기
     public void setBoardName(String boardName) {
         this.boardName = boardName;
     }
 
+    //보드이름 : 보드 인덱스 맵 반환
     public static HashMap<String, Integer> getNameToIndex() {
         return nameToIndex;
     }
 
+
+    //보드이름 : 보드 인덱스 맵 추가.
     public void editNameToIndex(String newName,String oldName, Integer index) {
 
         Board.nameToIndex.put(newName, index);
+    }
+
+    //누가 보드 만들었는지 알려줌.
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    //누가 보드만드는 소리를 내었어 누구인가 누구인가 누구인가
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

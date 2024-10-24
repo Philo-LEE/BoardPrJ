@@ -1,5 +1,6 @@
 package command;
 
+import console.reQuest.Request;
 import contents.Board;
 import contents.BoardBox;
 
@@ -11,24 +12,42 @@ public class BoardCommand {
 
 
         //add
-        public static Board newBoard(String boardName){
+        public static void newBoard(Request request) {
+            BoardBox boardBox = request.getBoardBox();
+            String boardName = request.getParamValue();
             Board createdBoard = new Board(boardName);
-            System.out.print("보드가 성공적으로 생성되었습니다.\n번호 : " +
-                    createdBoard.getBoardIndex()+ "\n이름 : " +
-                    createdBoard.getBoardName()+"\n");
-            return createdBoard;
+
+            if (Board.getNameToIndex().containsKey(request.getParamValue())) {
+                System.out.println("에러! 이름이 중복됩니다.");
+                return;
+            }
+
+            System.out.print("보드가 성공적으로 생성되었습니다.\n" +
+                    "번호 : " +createdBoard.getBoardIndex()+ "\n" +
+                    "이름 : " +createdBoard.getBoardName()+"\n" +
+                    "작성자 : " + request.getSession().getLoginId() + "\n");
+
+            boardBox.putboardList(createdBoard.getBoardIndex(), createdBoard);
         }
+
 
         //remove
-        public static void removeBoard(BoardBox boardBox,Integer boardIndex){
+        public static void removeBoard(Request request){
+
+            Integer boardIndex = Integer.valueOf(request.getParamValue());
+            BoardBox boardBox = request.getBoardBox();
+
             boardBox.getBoardList().remove(boardIndex);
             System.out.println("성공적으로 삭제했습니다.");
-            boardList(boardBox);
+            boardList(request);
         }
 
 
-        //board view 구현ㅋㅋㅋㅋㅋ  //-> 보드 기능으로 가야할듯.
-        public static void postList(HashMap<Integer, String[]> postBoard){
+        //board view 원래 post기능이었음
+        public static void postList(Request request){
+            Integer boardIndex = Board.getNameToIndex().get(request.getParamValue());
+
+            HashMap<Integer, String[]> postBoard = request.getBoardBox().getBoard(boardIndex).getContents();
 
             System.out.println("총 게시글은 "+ postBoard.size() +"개 입니다.\n");
 
@@ -63,7 +82,9 @@ public class BoardCommand {
 
 
         //list
-        public static void boardList(BoardBox boardBox){
+        public static void boardList(Request request){
+
+            BoardBox boardBox = request.getBoardBox();
             Integer[] boardIndex = boardBox.getBoardIndexList();
             Board tempBoard;
 
@@ -76,15 +97,20 @@ public class BoardCommand {
 
             }
 
-            System.out.println("----------마지막----------");
+            System.out.println(" ---------마지막--------- ");
 
         }
 
 
         //edit
-        public static void editBoard(BoardBox boardBox,Integer boardIndex){
+        public static void editBoard(Request request){
+
+            Integer boardIndex = Integer.valueOf(request.getParamValue());
+            BoardBox boardBox = request.getBoardBox();
+
             Scanner sc = new Scanner(System.in);
             System.out.print("수정할 이름을 입력하세요 : ");
+
             //원래 쓰던 보드 넘버 oldBoardName 받아두기.
             String oldBoardName = boardBox.getBoard(boardIndex).getBoardName();
             String newName = sc.nextLine();
@@ -95,11 +121,9 @@ public class BoardCommand {
             //새로운 board와 boardId 맵 업데이트.
             boardBox.getBoard(boardIndex).editNameToIndex(newName,oldBoardName,boardIndex);
 
-
-
         }
 
-        //set
+        //set <- 이건 걍 콘솔에서 구현해도 될듯... 회원인증기능까지 추가된다면 몰라..
 
 
 
