@@ -22,7 +22,7 @@ public class InputInspection {
 
     //commandTable
     static String[] classificationList = {"accounts","boards","posts","help"};
-    static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help"};
+    static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help","getAdmin"};
     static String[] boardCommandList = {"edit","remove","add","view","set","list","help"};
     static String[] commandList = {"add","edit","remove","get","board","help"}; //view는 List와 역할이 같고 파라미터로 구분.
 

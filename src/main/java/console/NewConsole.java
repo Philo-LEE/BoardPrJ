@@ -42,9 +42,8 @@ public class NewConsole {
 
 
         //레벨(0 : admin, 1 : User, 2 :손님)
-        AdminAccount account = new AdminAccount("admin","admin","SUPERPOWER1234@god.god");
-        accountsBox.setAccount(account);
-
+//        AdminAccount account = new AdminAccount("admin","admin","SUPERPOWER1234@god.god");
+//        accountsBox.setAccount(account);
 
         /*설정한 보드의 실제 상태가 여기에 캐스팅됨. 초기값은 defaultboard로 설정된다.
         posts 명령어에서 boardId를 받지 않고 postId만 받기 때문에 항상 콘솔에서 board가 있어야한다.
@@ -78,6 +77,7 @@ public class NewConsole {
             //Request 객체에 현재 콘솔의 정보를 넣어준다.
             request.setBoardBox(boardBox);
             request.setNowboardList(nowBoardList);
+            request.setAccountsBox(accountsBox);
 
             //어노테이션으로 메서드 호출
             for(Command command : commandList) {

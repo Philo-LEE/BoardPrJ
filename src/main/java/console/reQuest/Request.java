@@ -1,5 +1,6 @@
 package console.reQuest;
 
+import account.AccountsBox;
 import console.InputInspection;
 import console.Session.Session;
 import contents.BoardBox;
@@ -12,6 +13,7 @@ public class Request {
     private HashMap<Integer, String[]> nowboardList;
     private BoardBox boardBox;
     private boolean isLogin;
+    private AccountsBox accountsBox;
 
     public Request(Session session, InputInspection.URLSplitDone splitedURL) {
         this.session = session;
@@ -72,6 +74,14 @@ public class Request {
 
     public void setLogin(boolean login) {
         isLogin = login;
+    }
+
+    public AccountsBox getAccountsBox() {
+        return accountsBox;
+    }
+
+    public void setAccountsBox(AccountsBox accountsBox) {
+        this.accountsBox = accountsBox;
     }
 }
 

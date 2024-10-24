@@ -6,7 +6,6 @@ public class Session {
     private String loginId;
     private String password;
     private String email;
-
     private boolean isLogIn;
     private int userLevel;
 
@@ -39,6 +38,7 @@ public class Session {
     public boolean getisLogIn() {
         return isLogIn;
     }
+
 
 
 

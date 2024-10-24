@@ -19,6 +19,10 @@ public class BoardCommand implements Command {
             String boardName = request.getParamValue();
             Board createdBoard = new Board(boardName);
 
+            //Filter
+            if(!PermissionCheck(request)) return;
+
+
             if (!Board.getNameToIndex().containsKey(request.getParamValue())) {
                 System.out.println("에러! 이름이 중복됩니다.");
                 return;
@@ -36,6 +40,9 @@ public class BoardCommand implements Command {
         @Mapping(value = "/boards/remove")
         public static void removeBoard(Request request){
 
+            //Filter
+            if(!PermissionCheck(request)) return;
+
             Integer boardIndex = Integer.valueOf(request.getParamValue());
             BoardBox boardBox = request.getBoardBox();
 
@@ -45,7 +52,7 @@ public class BoardCommand implements Command {
         }
 
         //board view 원래 post기능이었음
-        @Mapping(value = "/boards/list")
+        @Mapping(value = "/boards/view")
         public static void postList(Request request){
             Integer boardIndex = Board.getNameToIndex().get(request.getParamValue());
             HashMap<Integer, String[]> postBoard = request.getBoardBox().getBoard(boardIndex).getContents();
@@ -111,6 +118,9 @@ public class BoardCommand implements Command {
             Integer boardIndex = Integer.valueOf(request.getParamValue());
             BoardBox boardBox = request.getBoardBox();
 
+            //Filter
+            if(!PermissionCheck(request)) return;
+
             Scanner sc = new Scanner(System.in);
             System.out.print("수정할 이름을 입력하세요 : ");
 
@@ -146,6 +156,14 @@ public class BoardCommand implements Command {
             request.setNowboardList(boardBox.getBoard(Integer.valueOf(request.getParamValue())).getContents());
         }
 
+        private static boolean PermissionCheck(Request request){
+            //Filter
+            if(!request.getSession().getisLogIn()&&request.getSession().getUserLevel()!=0){
+                return false;
+            }
+
+            return true;
+        }
 
 
 }

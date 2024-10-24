@@ -1,6 +1,7 @@
 package command;
 
 import account.AccountsBox;
+import account.AdminAccount;
 import account.NomalAccount;
 import annotation.Mapping;
 import console.Session.Session;
@@ -14,11 +15,12 @@ public class AccountCommand implements Command {
     public static void login(Request request) {
 
         Session session = request.getSession();
+        //Filter
+            if (session.getisLogIn() || request.getSession().getUserLevel() != 2) {
+                System.out.println("이미 로그인되어있습니다. 로그아웃 후 다시 시도해 주세요");
+                return;
+            }
 
-        if(session.getisLogIn()) {
-            System.out.println("이미 로그인되어있습니다. 로그아웃 후 다시 시도해 주세요");
-            return;
-        }
         Scanner sc = new Scanner(System.in);
         System.out.print("아이디를 입력하세요 : ");
         String id = sc.nextLine();
@@ -36,20 +38,25 @@ public class AccountCommand implements Command {
     @Mapping(value = "/accounts/signout")
     public static void logout(Request request) {
         Session session = request.getSession();
-        if(!session.getisLogIn()) {
+
+
+        if(!PermissionCheck(request))return;
+        //Filter
+        if(!session.getisLogIn()&&session.getUserLevel()!=2) {
             System.out.println("로그인되어있지 않습니다.");
             return;
         }
+
         session.defaultsessionSet();
         System.out.println("성공적으로 로그아웃 되었습니다.");
     }
 
     //signup 회원등록
     @Mapping(value = "/accounts/signup")
-    public static void signIn(Request request){
+    public static void signUp(Request request){
         Session session = request.getSession();
 
-        if(session.getisLogIn()) {
+        if(session.getisLogIn()||request.getSession().getUserLevel()!=2) {
             System.out.println("로그인상태에서는 회원을 만들 수 없습니다.");
             return;
         }
@@ -99,6 +106,8 @@ public class AccountCommand implements Command {
         Session session = request.getSession();
         String id = request.getParamValue();
 
+        if(!PermissionCheck(request)||!session.getLoginId().equals(request.getParamValue()) )return;
+
         if(!AccountsBox.getAccountsList().get(id).getAccountID().equals(id)){
             System.out.println("해당 ID의 유저는 없습니다.");
             return;
@@ -133,6 +142,10 @@ public class AccountCommand implements Command {
         Session session = request.getSession();
         String id = request.getParamValue();
 
+        if(!PermissionCheck(request)||!session.getLoginId().equals(request.getParamValue()) )return;
+
+
+
         if(!AccountsBox.getAccountsList().containsKey(id)){
             System.out.println("삭제할 아이디가 존재하지 않습니다.");
             return;
@@ -153,6 +166,21 @@ public class AccountCommand implements Command {
                                                 /accounts/edit?accountId =『아이디』 : 해당 아이디의 정보를 수정합니다.
                                                 /accounts/remove?accountId =『아이디』 : 해당 아이디의 정보를 삭제합니다.
                                                 """);
+    }
+
+    @Mapping(value = "/accounts/getAdmin")
+    public static void createadmin(Request request){
+        AccountsBox accountsBox = request.getAccountsBox();
+        Session session = request.getSession();
+        AdminAccount account = new AdminAccount("admin","admin","SUPERPOWER1234@god.god");
+        accountsBox.setAccount(account);
+        session.sessionOn(account);
+
+    }
+
+
+    static boolean PermissionCheck(Request request){
+        return request.getSession().getisLogIn() && request.getSession().getUserLevel()<2;
     }
 
 

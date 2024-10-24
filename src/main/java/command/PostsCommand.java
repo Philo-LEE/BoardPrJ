@@ -18,6 +18,9 @@ public class PostsCommand implements Command {
     static public void addPost (Request request){
         BoardBox boardBox = request.getBoardBox();
 
+        if(!PermissionCheck(request))return;
+
+
         if(!(boardBox.getBoardList().containsKey(Integer.valueOf(request.getParamValue())))){
             System.out.println("해당 보드는 만들어지지 않았습니다. /boards/list를 통해 보드를 확인하세요.");
             return;
@@ -88,12 +91,17 @@ public class PostsCommand implements Command {
 
         String num = request.getParamValue();
 
+        String[] tempPost = request.getNowboardList().get(Integer.valueOf(num));
+
+        if(!PermissionCheck(request))return;
+        if(!(tempPost[6].equals(request.getSession().getLoginId()) || request.getSession().getUserLevel()==0) ) return;
+
+
         //게시글 넘버 쳌
         if(!request.getNowboardList().containsKey(Integer.valueOf(num))){
             System.out.println(num + "번 게시글은 존재하지 않습니다.");
             return;
         }
-
 
 
         //해당보드의 해당 인덱스 삭제.
@@ -109,6 +117,13 @@ public class PostsCommand implements Command {
         Scanner sc = new Scanner(System.in);
         Integer num = Integer.valueOf(request.getParamValue());
         BoardBox boardBox = request.getBoardBox();
+        //뽑은 포스트 담길 곳 tempPost
+        String[] tempPost = request.getNowboardList().get(num);
+
+
+        if(!PermissionCheck(request))return;
+        if(!(tempPost[6].equals(request.getSession().getLoginId()) || request.getSession().getUserLevel()==0) ) return;
+
 
         //게시글 넘버 쳌
         if(request.getNowboardList().containsKey(num)){
@@ -116,8 +131,7 @@ public class PostsCommand implements Command {
             return;
         }
 
-        //뽑은 포스트 담길 곳 tempPost
-        String[] tempPost = request.getNowboardList().get(num);
+
 
         System.out.print("게시물 번호 : " + tempPost[0] +"\n작성일 : " + tempPost[4] + "\n수정일 : " + tempPost[5] + "\n제목 : " + tempPost[1] + "\n내용 : " + tempPost[2] + "\n");
 
@@ -151,6 +165,9 @@ public class PostsCommand implements Command {
                                                 /posts/get?PostID=『번호』 : 해당 번호의 게시판의 게시물을 조회합니다.""");
     }
 
+    static boolean PermissionCheck(Request request){
+        return request.getSession().getisLogIn() && request.getSession().getUserLevel()<2;
+    }
 
 
 }
