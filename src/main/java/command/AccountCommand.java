@@ -8,14 +8,7 @@ import console.reQuest.Request;
 
 import java.util.Scanner;
 
-public class AccountCommand {
-
-
-
-
-
-
-    //Login id 체크하고,
+public class AccountCommand implements Command {
 
     @Mapping(value = "/accounts/signin")
     public static void login(Request request) {
@@ -40,6 +33,7 @@ public class AccountCommand {
     }
 
     //signout 로그아웃(로그인 상태가 아닌데 로그아웃요청시 예외처리)
+    @Mapping(value = "/accounts/signout")
     public static void logout(Request request) {
         Session session = request.getSession();
         if(!session.getisLogIn()) {
@@ -51,6 +45,7 @@ public class AccountCommand {
     }
 
     //signup 회원등록
+    @Mapping(value = "/accounts/signup")
     public static void signIn(Request request){
         Session session = request.getSession();
 
@@ -77,6 +72,7 @@ public class AccountCommand {
     }
 
     //detail - accountId / accountId에 해당하는 계정정보 조회해서 뿌려줌 accountId 회원 : 계정/ 이메일/ 가입일
+    @Mapping(value = "/accounts/detail")
     public static void detail(Request request) {
         Session session = request.getSession();
         String id = request.getParamValue();
@@ -97,6 +93,7 @@ public class AccountCommand {
     }
 
     //edit - accountId / accountId에 해당하는 계정의 정보를 변경함. 비번, 이메일만 변경 가능. 그 외는 불가.
+    @Mapping(value = "/accounts/edit")
     public static void edit(Request request) {
 
         Session session = request.getSession();
@@ -131,6 +128,7 @@ public class AccountCommand {
     }
 
     //remove - accountId / accountId에 해당하는 계정을 탈퇴처리함. 계정에 대한 정보 재요청.=(아이디, 비번 재입력하도록 함)
+    @Mapping(value = "/accounts/remove")
     public static void remove(Request request) {
         Session session = request.getSession();
         String id = request.getParamValue();
@@ -143,6 +141,18 @@ public class AccountCommand {
         AccountsBox.getAccountsList().remove(id);
         System.out.println("삭제완료");
 
+    }
+
+    @Mapping(value = "/accounts/help")
+    public static void help(Request request) {
+        System.out.print("""
+                                                /accounts/signup : 로그인 기능. 첫 방문자는 계정을 만들어주세요.
+                                                /accounts/signin : 회원가입 기능입니다.
+                                                /accounts/signout : 로그아웃 합니다.
+                                                /accounts/detail?accountId =『아이디』 : 해당 아이디의 정보를 조회합니다.
+                                                /accounts/edit?accountId =『아이디』 : 해당 아이디의 정보를 수정합니다.
+                                                /accounts/remove?accountId =『아이디』 : 해당 아이디의 정보를 삭제합니다.
+                                                """);
     }
 
 

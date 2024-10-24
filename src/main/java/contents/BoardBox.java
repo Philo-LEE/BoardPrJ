@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 public class BoardBox {
 
-//    HashMap<Integer, HashMap<Integer, String[]>> boardList = new HashMap<>(); //보드들이 있는 게시판
     HashMap<Integer, Board> boardList = new HashMap<>(); //보드들이 있는 게시판
 
     //보드 게터

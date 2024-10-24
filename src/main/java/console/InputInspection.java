@@ -174,7 +174,6 @@ public class InputInspection {
             return true; // 보내줘야함 파라미터를 볼 필요가 없다.
         }
 
-
         //트리 위에서 입력한 URL의 명령노드가, 매칭되는 파라미터를 가지고 있지 않을경우 false
         if(!tempTable[(commandIndex-1)/3].equals(paramstemp[0])){
             return false;
@@ -276,6 +275,10 @@ public class InputInspection {
 
         public HashMap<String, String> getParamsHash() {
             return paramsHash;
+        }
+
+        public String getmergeCommand(){
+            return "/" + classification + "/" + command;
         }
 
 

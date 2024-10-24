@@ -1,5 +1,6 @@
 package command;
 
+import annotation.Mapping;
 import console.reQuest.Request;
 import contents.Board;
 import contents.BoardBox;
@@ -8,16 +9,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class BoardCommand {
+public class BoardCommand implements Command {
 
 
         //add
+        @Mapping(value = "/boards/add")
         public static void newBoard(Request request) {
             BoardBox boardBox = request.getBoardBox();
             String boardName = request.getParamValue();
             Board createdBoard = new Board(boardName);
 
-            if (Board.getNameToIndex().containsKey(request.getParamValue())) {
+            if (!Board.getNameToIndex().containsKey(request.getParamValue())) {
                 System.out.println("에러! 이름이 중복됩니다.");
                 return;
             }
@@ -30,8 +32,8 @@ public class BoardCommand {
             boardBox.putboardList(createdBoard.getBoardIndex(), createdBoard);
         }
 
-
         //remove
+        @Mapping(value = "/boards/remove")
         public static void removeBoard(Request request){
 
             Integer boardIndex = Integer.valueOf(request.getParamValue());
@@ -42,20 +44,19 @@ public class BoardCommand {
             boardList(request);
         }
 
-
         //board view 원래 post기능이었음
+        @Mapping(value = "/boards/list")
         public static void postList(Request request){
             Integer boardIndex = Board.getNameToIndex().get(request.getParamValue());
-
             HashMap<Integer, String[]> postBoard = request.getBoardBox().getBoard(boardIndex).getContents();
 
             System.out.println("총 게시글은 "+ postBoard.size() +"개 입니다.\n");
 
-            //post Board의 키셋 받고 정렬 후 for문 돌기
+            //Board의 키셋 받고 정렬 후 for문 돌기
             //인덱스 담을 배열 선언.
             Integer[] indexSet  = new Integer[postBoard.size()];
 
-            // indexSet에 차례대로 담겨야 하므로 j 선언,(for -each)에서는 j가 추가선언이 되지 않는다.ㅠ
+            //indexSet에 차례대로 담겨야 하므로 j 선언,(for -each)에서는 j가 추가선언이 되지 않는다.ㅠ
             int j=0;
 
             //i에 posrtBoard의 KeySet이 담긴다.(HashMap은 비순서성)
@@ -74,14 +75,16 @@ public class BoardCommand {
                 // tempPost의 요소를 출력
                 String[] tempPost = postBoard.get(i);
 
-                System.out.print("게시물 번호 : " + tempPost[0] +"\n작성일 : " + tempPost[4] + "\n수정일 : " + tempPost[5] + "\n제목 : " + tempPost[1] + "\n내용 : " + tempPost[2] + "\n\n");
+                System.out.println("글 번호    |글 제목  |작성일");
+                System.out.printf("""
+            %s     |%s    |%s
+            """,tempPost[0],tempPost[1],tempPost[4]);
 
             }
         }
 
-
-
         //list
+        @Mapping(value = "/boards/list")
         public static void boardList(Request request){
 
             BoardBox boardBox = request.getBoardBox();
@@ -101,8 +104,8 @@ public class BoardCommand {
 
         }
 
-
         //edit
+        @Mapping(value = "/boards/edit")
         public static void editBoard(Request request){
 
             Integer boardIndex = Integer.valueOf(request.getParamValue());
@@ -124,10 +127,24 @@ public class BoardCommand {
         }
 
         //set <- 이건 걍 콘솔에서 구현해도 될듯... 회원인증기능까지 추가된다면 몰라..
+        @Mapping(value = "/boards/help")
+        public static void help(Request request){
+            System.out.print("""
+                /boards/add : 현재 게시판에 게시물을 생성합니다.
+                /boards/remove?boardID= 『번호』 : 해당 번호의 게시판을 삭제합니다.
+                /boards/edit?boardID = 『번호』 : 해당 번호의 게시판을 수정합니다.
+                /boards/set?boardId = 『번호』 : 해당 번호의 게시판을 불러옵니다.
+                /boards/view?boardName =『이름』 : 해당 이름의 게시판 내용을 요약해서 봅니다.
+                /boards/list : 게시판의 목록을 봅니다.
+                /boards/help : 게시판 사용법을 봅니다.
+                """);
+        }
 
-
-
-
+        @Mapping(value = "/boards/set")
+        public static void boardSet(Request request){
+            BoardBox boardBox = request.getBoardBox();
+            request.setNowboardList(boardBox.getBoard(Integer.valueOf(request.getParamValue())).getContents());
+        }
 
 
 

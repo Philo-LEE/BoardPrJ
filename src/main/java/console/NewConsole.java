@@ -1,8 +1,11 @@
 package console;
 
 
+import Container.Container;
 import account.AccountsBox;
 import account.AdminAccount;
+import annotation.Mapping;
+import command.Command;
 import console.Session.Session;
 import command.AccountCommand;
 import command.BoardCommand;
@@ -11,8 +14,14 @@ import console.reQuest.Request;
 import contents.Board;
 import contents.BoardBox;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
+
+
 
 
 public class NewConsole {
@@ -25,17 +34,24 @@ public class NewConsole {
         Session nowsession = new Session(); // 이 콘솔에 로그인한 계정의 정보를 담을 세션 생성.
         nowsession.defaultsessionSet();//세션 초기화
         AccountsBox accountsBox = new AccountsBox(); //계정들이 담길 곳.
-        String[] nowpost;//만들어진 post가 돌아오는 공간.
+        List<Command> commandList = new ArrayList<>();
+        Container container = new Container();
+        commandList.add((BoardCommand) container.getTest(BoardCommand.class));
+        commandList.add((AccountCommand) container.getTest(AccountCommand.class));
+        commandList.add((PostsCommand) container.getTest(PostsCommand.class));
+
 
         //레벨(0 : admin, 1 : User, 2 :손님)
         AdminAccount account = new AdminAccount("admin","admin","SUPERPOWER1234@god.god");
         accountsBox.setAccount(account);
+
 
         /*설정한 보드의 실제 상태가 여기에 캐스팅됨. 초기값은 defaultboard로 설정된다.
         posts 명령어에서 boardId를 받지 않고 postId만 받기 때문에 항상 콘솔에서 board가 있어야한다.
         그리고 일반유저는 보드를 만들 권한이 없으므로 미리 하나가 있어야한다.*/
         HashMap<Integer, String[]> nowBoardList = DefaultBoard.getContents();
         boardBox.putboardList(DefaultBoard.getBoardIndex(),DefaultBoard);
+
 
         while(true){
             //현재세션의 로그인 아이디가 표시.
@@ -45,8 +61,9 @@ public class NewConsole {
             String urlcommand = sc.nextLine();
             urlcommand = urlcommand.trim();
 
-            //종료면 종료
+            //종료,도움!
             if(urlcommand.equals("exit")){consoleExit();}
+            if(urlcommand.equals("help")){help();}
 
             //스플릿, 유효성검사를 마친 객체를 받을 변수 생성/캐스팅
             InputInspection.URLSplitDone splitDone;
@@ -62,17 +79,40 @@ public class NewConsole {
             request.setBoardBox(boardBox);
             request.setNowboardList(nowBoardList);
 
+            //어노테이션으로 메서드 호출
+            for(Command command : commandList) {
+                for (Method method : command.getClass().getDeclaredMethods()) { //순서성있는지 없는지
+                    if (method.isAnnotationPresent(Mapping.class)) {
+                        if (method.getAnnotation(Mapping.class).value().equals(splitDone.getmergeCommand())) {
+                            try {
+                                method.invoke(command, request);
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            } catch (InvocationTargetException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        }
+    }
+
+
+/*
             //request의 정보를 가지고 해당되는 메서드 실행. 모든 메서드는 request를 받는다.
             try {
                 switch (request.getClassification()) {
                     case "accounts":
                         switch (request.getCommand()) {
-                            case "signup":
+                            case "signin":
                                 AccountCommand.login(request);
                                 break;
-                            case "signin":
-                                AccountCommand.signIn(request);
-                                break;
+//                            case "signup":
+//                                AccountCommand.signIn(request);
+//                                break;
                             case "signout":
                                 AccountCommand.logout(request);
                                 break;
@@ -86,20 +126,12 @@ public class NewConsole {
                                 AccountCommand.remove(request);
                                 break;
                             case "help":
-                                System.out.print("""
-                                                /accounts/signup : 로그인 기능. 첫 방문자는 계정을 만들어주세요.
-                                                /accounts/signin : 회원가입 기능입니다.
-                                                /accounts/signout : 로그아웃 합니다.
-                                                /accounts/detail?accountId =『아이디』 : 해당 아이디의 정보를 조회합니다.
-                                                /accounts/edit?accountId =『아이디』 : 해당 아이디의 정보를 수정합니다.
-                                                /accounts/remove?accountId =『아이디』 : 해당 아이디의 정보를 삭제합니다.
-                                                """);
+                                AccountCommand.help(request);
                                 break;
                         }
                         break;
                     case "boards":
                         switch (request.getCommand()) {
-
                             case "edit":
                                 BoardCommand.editBoard(request);
                                 break;
@@ -113,70 +145,44 @@ public class NewConsole {
                                 BoardCommand.postList(request);
                                 break;
                             case "set":
-                                nowBoardList = boardBox.getBoard(Integer.valueOf(request.getParamValue())).getContents();
+                                BoardCommand.boardSet(request);
                                 break;
                             case "list":
                                 BoardCommand.boardList(request);
                                 break;
                             case "help":
-                                System.out.print("""
-                                                /boards/add : 현재 게시판에 게시물을 생성합니다.
-                                                /posts/edit?PostID=『번호』 : 게시글을 수정합니다. 수정한 시간이 추가됩니다. 번호는 현재 설정되어있는 게시판의 게시글 번호입니다.
-                                                /posts/remove?PostID=『번호』 : 해당 번호의 게시판의 게시물을 삭제합니다.
-                                                /posts/get?PostID=『번호』 : 해당 번호의 게시판의 게시물을 조회합니다.""");
+                                BoardCommand.help(request);
                                 break;
                         }
                         break;
                     case "posts":
                         switch (request.getCommand()) {
                             case "add":
-                                if(!(boardBox.getBoardList().containsKey(Integer.valueOf(request.getParamValue())))){
-                                    System.out.println("해당 보드는 만들어지지 않았습니다. /boards/list를 통해 보드를 확인하세요.");
-                                    break;
-                                }
-                                nowpost = PostsCommand.addPost(request); //1은 보드번호
-                                boardBox.getBoard(Integer.valueOf(request.getParamValue())).put(nowpost);
+                                PostsCommand.addPost(request);
                                 break;
                             case "edit":
-                                request.setNowboardList(nowBoardList);
-                                nowpost = PostsCommand.editPost(request);
-                                if (nowpost == null) {
-                                    System.out.println("수정할 게시물이 없습니다.");
-                                    break;}
-                                //해당 postId가 있던 게시판으로 할당되어야 하므로.
-                                boardBox.getBoard(Integer.valueOf(request.getParamValue())).put(nowpost);
+                                PostsCommand.editPost(request);
                                 break;
                             case "remove":
-                                request.setNowboardList(nowBoardList);
                                 PostsCommand.remove(request);
                                 break;
                             case "get":
-                                request.setNowboardList(nowBoardList);
                                 PostsCommand.lookPost(request);
                                 break;
                             case "help":
-                                System.out.print("""
-                                                /posts/add : 현재 게시판에 게시물을 생성합니다.
-                                                /posts/edit?PostID=『번호』 : 게시글을 수정합니다. 수정한 시간이 추가됩니다. 번호는 현재 설정되어있는 게시판의 게시글 번호입니다.
-                                                /posts/remove?PostID=『번호』 : 해당 번호의 게시판의 게시물을 삭제합니다.
-                                                /posts/get?PostID=『번호』 : 해당 번호의 게시판의 게시물을 조회합니다.""");
+                                PostsCommand.help(request);
                                 break;
                         }
-                        break;
-
-                    case "help":
-                        System.out.print("""
-                                        /accounts/help : 계정관련한 명령어를 봅니다.
-                                        /boards/help : 게시물을 수정합니다. 수정한 시간이 찍힙니다.
-                                        /posts/help : 해당 번호의 게시물을 삭제합니다.
-                                        exit : 콘솔을 종료합니다.""");
                         break;
                 }
             }catch (NullPointerException e){
                 System.out.println("존재하지 않는 파라미터 값을 입력했습니다.");
+
             }
-        }
-    }
+
+            */
+
+
 
     //exit 구현
     static void consoleExit(){
@@ -194,5 +200,15 @@ public class NewConsole {
             System.exit(0);
         }
     }
+
+    //help 구현
+    static void help(){
+        System.out.print("""
+                                        /accounts/help : 계정관련한 명령어를 봅니다.
+                                        /boards/help : 게시물을 수정합니다. 수정한 시간이 찍힙니다.
+                                        /posts/help : 해당 번호의 게시물을 삭제합니다.
+                                        exit : 콘솔을 종료합니다.""");
+    }
+
 }
 
