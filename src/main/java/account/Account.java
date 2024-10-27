@@ -37,9 +37,6 @@ public abstract class Account {
         return this.accountPW.equals(accountPW);
     }
 
-    //
-
-
     public String getAccountID() {
         return accountID;
     }

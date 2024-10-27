@@ -43,7 +43,6 @@ public class InputInspection {
     public InputInspection() {
     }
 
-
     //URL 스플리터를 통과해서 나눠진 값들이 각 검사기를 통과하면 클래스 채로 반환.
     static URLSplitDone inputInspection(String urlcommand) {
 
@@ -181,7 +180,6 @@ public class InputInspection {
 
         return true;
     }
-
 
     //URL 스플리터
     static URLSplitDone urlSpliter(String urlcommand){

@@ -11,7 +11,6 @@ import java.util.Scanner;
 
 public class BoardCommand implements Command {
 
-
         //add
         @Mapping(value = "/boards/add")
         public static void newBoard(Request request) {

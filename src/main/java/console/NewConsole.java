@@ -80,15 +80,17 @@ public class NewConsole {
             request.setAccountsBox(accountsBox);
 
             //어노테이션으로 메서드 호출
-            for(Command command : commandList) {
-                for (Method method : command.getClass().getDeclaredMethods()) { //순서성있는지 없는지
-                    if (method.isAnnotationPresent(Mapping.class)) {
-                        if (method.getAnnotation(Mapping.class).value().equals(splitDone.getmergeCommand())) {
+            for(Command command : commandList) { //인터페이스 어노테이션을 상속받은 클래스들로 만든 각 인스턴스를 호출한다.(호출된건 컨테이너에 있다)
+                for (Method method : command.getClass().getDeclaredMethods()) { //해당인스턴스의 클래스정보를 받고, 거기서 정의된 메서드를 순회한다. (위 아래의 순서성은 없다)
+                    if (method.isAnnotationPresent(Mapping.class)) { //지금 순회하고있는 메소드가 Mapping.class 어노테이션이 붙어있는지 확인함
+                        if (method.getAnnotation(Mapping.class).value().equals(splitDone.getmergeCommand())) { //어노테이션이 붙어있다면 그 메소드에 붙은 어노테이션의 값이, getmergeCommand 값이랑 일치한지 확인.
                             try {
+                                /*
+                                그 메소드(method)를 호출(invoke)한다. public Object invoke(Object obj, Object... args) 해당 인자를 나열해서 넘겨도 되고,
+                                Object[] params = {5, "Hello", true}; 이런 식으로 뭉쳐서 넘겨줘도 된다.
+                                 */
                                 method.invoke(command, request);
-                            } catch (IllegalAccessException e) {
-                                throw new RuntimeException(e);
-                            } catch (InvocationTargetException e) {
+                            } catch (IllegalAccessException | InvocationTargetException e) {
                                 throw new RuntimeException(e);
                             }
                         }

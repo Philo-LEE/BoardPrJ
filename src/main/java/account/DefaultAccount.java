@@ -9,7 +9,6 @@ public class DefaultAccount extends Account {
         super(accountID, accountPW, email);
     }
 
-
     public int checkMyAccountLevel() {
         return this.AccountLevel;
     }

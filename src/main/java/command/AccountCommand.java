@@ -178,12 +178,9 @@ public class AccountCommand implements Command {
 
     }
 
-
     static boolean PermissionCheck(Request request){
         return request.getSession().getisLogIn() && request.getSession().getUserLevel()<2;
     }
-
-
 
 }
 

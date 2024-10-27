@@ -38,6 +38,4 @@ public class BoardBox {
         return boardList;
     }
 
-
-
 }

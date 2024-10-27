@@ -23,9 +23,6 @@ public class Board {
 
         //이름과 보드넘버를 매칭하는 해시테이블에 값 추가.
         this.nameToIndex.put(boardName,this.index);
-
-
-
     }
 
 
@@ -58,7 +55,6 @@ public class Board {
     public static HashMap<String, Integer> getNameToIndex() {
         return nameToIndex;
     }
-
 
     //보드이름 : 보드 인덱스 맵 추가.
     public void editNameToIndex(String newName,String oldName, Integer index) {
