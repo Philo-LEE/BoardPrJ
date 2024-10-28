@@ -10,5 +10,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Mapping {
     String value() default "";
-
 }

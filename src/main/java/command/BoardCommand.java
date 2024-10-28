@@ -76,15 +76,17 @@ public class BoardCommand implements Command {
             Arrays.sort(indexSet);
 
             // indexSet의 인덱스를 차례대로 순회. 삭제한 것은 자동으로 넘어간다.
+            System.out.println("|글 번호  |작성일                |제목");
+            System.out.println("====================");
             for(Integer i : indexSet){
 
                 // tempPost의 요소를 출력
                 String[] tempPost = postBoard.get(i);
 
-                System.out.println("글 번호    |글 제목  |작성일");
+
                 System.out.printf("""
-            %s     |%s    |%s
-            """,tempPost[0],tempPost[1],tempPost[4]);
+            |%s       |%s  |%s
+            """,tempPost[0],tempPost[4],tempPost[1]);
 
             }
         }
@@ -135,7 +137,7 @@ public class BoardCommand implements Command {
 
         }
 
-        //set <- 이건 걍 콘솔에서 구현해도 될듯... 회원인증기능까지 추가된다면 몰라..
+        //help <- 이건 걍 콘솔에서 구현해도 될듯... 회원인증기능까지 추가된다면 몰라..
         @Mapping(value = "/boards/help")
         public static void help(Request request){
             System.out.print("""
@@ -149,12 +151,14 @@ public class BoardCommand implements Command {
                 """);
         }
 
+        //set 기능은 기존에 없던 명령어. 보드를 세팅함.
         @Mapping(value = "/boards/set")
         public static void boardSet(Request request){
             BoardBox boardBox = request.getBoardBox();
             request.setNowboardList(boardBox.getBoard(Integer.valueOf(request.getParamValue())).getContents());
         }
 
+        //보드의 권한체크
         private static boolean PermissionCheck(Request request){
             //Filter
             if(!request.getSession().getisLogIn()&&request.getSession().getUserLevel()!=0){

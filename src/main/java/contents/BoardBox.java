@@ -33,7 +33,7 @@ public class BoardBox {
         this.boardList.put(boardId, boardList);
     }
 
-
+    //보드박스 게터
     public HashMap<Integer, Board> getBoardList() {
         return boardList;
     }

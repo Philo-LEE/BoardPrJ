@@ -12,24 +12,55 @@ public class Request {
     private InputInspection.URLSplitDone splitedURL;
     private HashMap<Integer, String[]> nowboardList;
     private BoardBox boardBox;
-    private boolean isLogin;
     private AccountsBox accountsBox;
 
+    //생성자
     public Request(Session session, InputInspection.URLSplitDone splitedURL) {
         this.session = session;
         this.splitedURL = splitedURL;
     }
 
+    //게터
     public Session getSession() {
         return session;
     }
 
-    public void setSession(Session session) {
-        this.session = session;
+    public String getParamValue(){
+        return this.splitedURL.getParamsHash().get(this.splitedURL.getParamsHash().keySet().iterator().next());
     }
 
+    public HashMap<Integer, String[]> getNowboardList() {
+        return nowboardList;
+    }
+
+    public BoardBox getBoardBox() {
+        return boardBox;
+    }
+
+    public AccountsBox getAccountsBox() {
+        return accountsBox;
+    }
+
+    //세터
+    public void setNowboardList(HashMap<Integer, String[]> nowboardList) {
+        this.nowboardList = nowboardList;
+    }
+
+    public void setBoardBox(BoardBox boardBox) {
+        this.boardBox = boardBox;
+    }
+
+    public void setAccountsBox(AccountsBox accountsBox) {
+        this.accountsBox = accountsBox;
+    }
+
+    /* 어노테이션 이후 사용 안함.
     public InputInspection.URLSplitDone getSplitedURL() {
         return splitedURL;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 
     public void setSplitedURL(InputInspection.URLSplitDone splitedURL) {
@@ -48,26 +79,6 @@ public class Request {
         return this.splitedURL.getParamsHash().keySet().iterator().next();
     }
 
-    public String getParamValue(){
-        return this.splitedURL.getParamsHash().get(this.splitedURL.getParamsHash().keySet().iterator().next());
-    }
-
-    public HashMap<Integer, String[]> getNowboardList() {
-        return nowboardList;
-    }
-
-    public void setNowboardList(HashMap<Integer, String[]> nowboardList) {
-        this.nowboardList = nowboardList;
-    }
-
-    public BoardBox getBoardBox() {
-        return boardBox;
-    }
-
-    public void setBoardBox(BoardBox boardBox) {
-        this.boardBox = boardBox;
-    }
-
     public boolean isLogin() {
         return isLogin;
     }
@@ -75,13 +86,8 @@ public class Request {
     public void setLogin(boolean login) {
         isLogin = login;
     }
+*/
 
-    public AccountsBox getAccountsBox() {
-        return accountsBox;
-    }
-
-    public void setAccountsBox(AccountsBox accountsBox) {
-        this.accountsBox = accountsBox;
-    }
 }
+
 

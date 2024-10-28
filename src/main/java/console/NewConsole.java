@@ -27,7 +27,7 @@ import java.util.Scanner;
 public class NewConsole {
 
     public static void main(String[] args) {
-        //초기화
+        //초기화 <- 추후 컨테이너에서 운용하면 좋을듯.
         Scanner sc = new Scanner(System.in); //스캐너헤헤 ㅋㅋ
         BoardBox boardBox = new BoardBox(); // 보드박스 만들기
         Board DefaultBoard = new Board("DefaultBoard"); //디폴트 보드임.
@@ -74,12 +74,12 @@ public class NewConsole {
             //Request 객체 생성
             Request request = new Request(nowsession,splitDone);
 
-            //Request 객체에 현재 콘솔의 정보를 넣어준다.
+            //Request 객체에 현재 콘솔의 정보를 넣어준다. <- 추후 세션에 포함시키면 좋을듯.
             request.setBoardBox(boardBox);
             request.setNowboardList(nowBoardList);
             request.setAccountsBox(accountsBox);
 
-            //어노테이션으로 메서드 호출
+            //메서드 호출(리플렉션)
             for(Command command : commandList) { //인터페이스 어노테이션을 상속받은 클래스들로 만든 각 인스턴스를 호출한다.(호출된건 컨테이너에 있다)
                 for (Method method : command.getClass().getDeclaredMethods()) { //해당인스턴스의 클래스정보를 받고, 거기서 정의된 메서드를 순회한다. (위 아래의 순서성은 없다)
                     if (method.isAnnotationPresent(Mapping.class)) { //지금 순회하고있는 메소드가 Mapping.class 어노테이션이 붙어있는지 확인함
@@ -112,9 +112,9 @@ public class NewConsole {
                             case "signin":
                                 AccountCommand.login(request);
                                 break;
-//                            case "signup":
-//                                AccountCommand.signIn(request);
-//                                break;
+                           case "signup":
+                               AccountCommand.signIn(request);
+                                break;
                             case "signout":
                                 AccountCommand.logout(request);
                                 break;

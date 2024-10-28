@@ -7,14 +7,17 @@ public class AccountsBox {
     //계정 정보들이 담길 곳.
     private static HashMap<String, Account> AccountsList = new HashMap<>();
 
+    //Account 객체 반환 게터
     public Account getAccount(String id) {
         return this.AccountsList.get(id);
     }
 
+    //Account 세터
     public void setAccount(Account account) {
         AccountsList.put(account.getAccountID(),account);
     }
 
+    //해시맵 전체를 반환하는 게터
     public static HashMap<String, Account> getAccountsList() {
         return AccountsList;
     }

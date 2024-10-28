@@ -165,6 +165,7 @@ public class PostsCommand implements Command {
                                                 /posts/get?PostID=『번호』 : 해당 번호의 게시판의 게시물을 조회합니다.""");
     }
 
+    //게시글 권한 설정
     static boolean PermissionCheck(Request request){
         return request.getSession().getisLogIn() && request.getSession().getUserLevel()<2;
     }

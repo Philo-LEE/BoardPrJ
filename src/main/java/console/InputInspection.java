@@ -20,7 +20,7 @@ public class InputInspection {
                 일단 URL을 자르는게 필요함.
         */
 
-    //commandTable
+    //Table
     static String[] classificationList = {"accounts","boards","posts","help"};
     static String[] accountsCommandList = {"signup","signin","signout","detail","edit","remove","help","getAdmin"};
     static String[] boardCommandList = {"edit","remove","add","view","set","list","help"};
@@ -36,11 +36,8 @@ public class InputInspection {
 
     static ArrayList<String[]> classificationArray = new ArrayList<>(List.of(boardsTree,postsTree,accountsTree));
 
-
-
-
     //해당 클래스는 스태틱 메소드만 존재함.
-    public InputInspection() {
+    private InputInspection() {
     }
 
     //URL 스플리터를 통과해서 나눠진 값들이 각 검사기를 통과하면 클래스 채로 반환.
@@ -85,7 +82,7 @@ public class InputInspection {
         }
 
         if(!checkParams(classification, command, paramsHash)) {
-            System.out.println("파라미터 오류입니다.");
+            System.out.println("파라미터 오류");
             return null;
         }
 
@@ -118,7 +115,7 @@ public class InputInspection {
     static boolean checkCommand(String urlClassification, String command){
         switch(urlClassification){
             case "accounts":
-                String[] params = {"detail","edit","remove"};
+
                 for(String temp: accountsCommandList){
                     if(command.equals(temp)){
                         return true;
@@ -209,7 +206,7 @@ public class InputInspection {
         }
 
         try{command = urlSplit[1].split("\\?",2)[0];
-        }catch(ArrayIndexOutOfBoundsException e){
+        }catch(ArrayIndexOutOfBoundsException e){ //help 구현을 위해 반드시 필요함.
             return new URLSplitDone(classification,null,null);}
 
                 //만약에 command가 파라미터를 필요로하지않는 명령어라면 params비우고 반환
@@ -250,7 +247,7 @@ public class InputInspection {
         return new URLSplitDone(classification, command, paramsHash);
     }
 
-    //URL 스플리터를 반환하기위한 에러 메세지
+    //URL 스플리터를 반환하기위한 에러
     public static class URLSplitDone {
         String classification;
         String command;

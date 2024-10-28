@@ -3,18 +3,17 @@ package contents;
 import java.util.HashMap;
 
 public class Board {
-    private static Integer boardIndex = 1;
-    private static Integer postIndex = 1;
     //각 보드에 할당되는 애들 만큼 인덱스를 정해줌.
+    private static Integer postIndex = 1;
     //게시물의 Index != 보드의 postIndex
+    private static Integer boardIndex = 1;
+
 
     private String boardName;
     private Integer index = 0;
     private HashMap<Integer, String[]> contents = new HashMap<>();
     private static HashMap<String,Integer> nameToIndex = new HashMap<>();
     private String createdBy;
-
-
 
     //생성자
     public Board(String boardName) {
@@ -24,7 +23,6 @@ public class Board {
         //이름과 보드넘버를 매칭하는 해시테이블에 값 추가.
         this.nameToIndex.put(boardName,this.index);
     }
-
 
     //보드이름 반환
     public String getBoardName() {

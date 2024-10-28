@@ -156,6 +156,7 @@ public class AccountCommand implements Command {
 
     }
 
+    //help, accounts의 help
     @Mapping(value = "/accounts/help")
     public static void help(Request request) {
         System.out.print("""
@@ -168,6 +169,7 @@ public class AccountCommand implements Command {
                                                 """);
     }
 
+    //Test를 위한 Admin 계정 겟.
     @Mapping(value = "/accounts/getAdmin")
     public static void createadmin(Request request){
         AccountsBox accountsBox = request.getAccountsBox();
@@ -178,6 +180,7 @@ public class AccountCommand implements Command {
 
     }
 
+    //accounts의 계정권한 체크하는 메서드.
     static boolean PermissionCheck(Request request){
         return request.getSession().getisLogIn() && request.getSession().getUserLevel()<2;
     }
